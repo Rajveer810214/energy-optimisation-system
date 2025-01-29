@@ -1,0 +1,155 @@
+[{
+  "_id": {
+    "$oid": "67776a1a7714a0ec93b85ed6"
+  },
+  "sensorID": "ACS1005622428",
+  "sensorType": "ACS712",
+  "deviceName": "fan",
+  "macAddr": [
+    80,
+    2,
+    145,
+    240,
+    78,
+    24
+  ],
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-03T04:39:54.073Z"
+  },
+  "__v": 0,
+  "value1": 105, 
+  "value2": 105 
+},
+{
+  "_id": {
+    "$oid": "677770b388f479834b379f92"
+  },
+  "sensorID": "DHT100112202428",
+  "sensorType": "DHT",
+  "deviceName": "Door ",
+  "macAddr": [
+    169,
+    229,
+    124,
+    133,
+    87,
+    38
+  ],
+  "status": "inactive",
+  "createdAt": {
+    "$date": "2025-01-03T05:08:03.611Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "677770ee88f479834b379f98"
+  },
+  "sensorID": "ACS712100112202428",
+  "sensorType": "ACS712",
+  "deviceName": "Laptop",
+  "macAddr": [
+    36,
+    215,
+    235,
+    202,
+    161,
+    125
+  ],
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-03T05:09:02.945Z"
+  },
+  "__v": 0,
+  "value1": 10.187769000000003,
+  "value2": 103.2142
+},
+{
+  "_id": {
+    "$oid": "6777712c88f479834b379f9c"
+  },
+  "sensorID": "LDR100112202428",
+  "sensorType": "LDR",
+  "deviceName": "Room",
+  "macAddr": [
+    164,
+    229,
+    124,
+    133,
+    87,
+    38
+  ],
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-03T05:10:04.918Z"
+  },
+  "__v": 0,
+  "value1": 0
+},
+{
+  "_id": {
+    "$oid": "6777716d88f479834b379fa0"
+  },
+  "sensorID": "DOORWIN100112202428",
+  "sensorType": "DOORWIN",
+  "deviceName": "MainGate",
+  "macAddr": [
+    204,
+    80,
+    227,
+    107,
+    124,
+    109
+  ],
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-03T05:11:09.634Z"
+  },
+  "__v": 0,
+  "value1": 1
+},
+{
+  "_id": {
+    "$oid": "677771bd88f479834b379fa4"
+  },
+  "sensorID": "DOORWIN100212202428",
+  "sensorType": "DOORWIN",
+  "deviceName": "SideWindow",
+  "macAddr": [
+    204,
+    80,
+    227,
+    107,
+    124,
+    109
+  ],
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-03T05:12:29.623Z"
+  },
+  "__v": 0,
+  "value1": 1
+},
+{
+  "_id": {
+    "$oid": "6777721888f479834b379faa"
+  },
+  "sensorID": "PIR100112202428",
+  "sensorType": "PIR",
+  "deviceName": "MainGate",
+  "macAddr": [
+    80,
+    2,
+    145,
+    240,
+    78,
+    214
+  ],
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-01-03T05:14:00.343Z"
+  },
+  "__v": 0,
+  "value1": 0
+}]
