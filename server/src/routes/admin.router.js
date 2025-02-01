@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { createLab, getAllLabs, getLabById, updateLab, deleteLab, addSensorToLab, getSensorsByLab,addUserToLab,getLabsByUser} from "../controllers/admin.controller.js";
+import { createLab, getAllLabs, getLabById, updateLab, deleteLab, addSensorToLab, getSensorsByLab,addUserToLab,getLabsByUser, getUsersByLab} from "../controllers/admin.controller.js";
+import { getAllUsers } from "../controllers/user.controller.js";
 import verifyJWT from "../middleware/Auth.middleware.js";
+
 const router=Router()
 
 // Lab routes
@@ -17,4 +19,8 @@ router.get('/labs/:labId/sensors',verifyJWT (['admin', 'user']),getSensorsByLab)
 //user add to lab and show
 router.post('/labs/:labId/users/:userId', addUserToLab);
 router.get('/labs/user/:userId', getLabsByUser);
+router.route("/users").get(verifyJWT(['admin']), getAllUsers); 
+router.route('/labs/:labId/users').get(verifyJWT(["admin"]), getUsersByLab);
+
+
 export default router

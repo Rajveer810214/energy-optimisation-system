@@ -13,4 +13,5 @@ router.route('/verify-email').post(verifyEmail)
 router.route('/logOut').post(verifyJWT(['user', 'admin']),logOutUser)
 router.route('/verify-code').post(verifyEmail)
 router.route('/current-user-details').get(verifyJWT(['admin', 'user']),getUserDetails)
+
 export default router

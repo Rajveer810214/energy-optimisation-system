@@ -195,9 +195,20 @@ const getUserDetails=asyncHandler(async(req,res)=>{
         200,req.user,"Current User Fetched"
       )
     )
-      }
-    
+      } 
   })
 
+  const getAllUsers = asyncHandler(async (req, res) => {
+    try {
+        const users = await User.find().select("-password -refreshToken"); // Excluding sensitive data
+        if (!users || users.length === 0) {
+            throw new ApiError(404, "No users found");
+        }
+        return res.status(200).json(new ApiResponse(200, users, "Users fetched successfully"));
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while fetching users");
+    }
+});
+
 export {userRegister,loginUser,logOutUser,refreshAccessToken,getUserDetails,
-    generateAccessAndRefreshToken}
+    generateAccessAndRefreshToken, getAllUsers}

@@ -96,4 +96,24 @@ const getLabsByUser = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, labs, "Labs found for user"));
 });
-export { createLab, getAllLabs, getLabById, updateLab, deleteLab, addSensorToLab, getSensorsByLab,addUserToLab,getLabsByUser };
+const getUsersByLab = asyncHandler(async (req, res) => {
+    const labId = req.params.labId;
+
+    // Find the lab by its ID
+    const lab = await Lab.findById(labId).populate('users'); // Assuming 'users' is a field that contains user references
+
+    if (!lab) {
+        throw new ApiError(404, "Lab not found");
+    }
+
+    // If the lab has no users, return a message
+    if (lab.users.length === 0) {
+        return res.status(200).json(new ApiResponse(200, [], "No users found for this lab"));
+    }
+
+    // Return the users associated with the lab
+    return res.status(200).json(new ApiResponse(200, lab.users, "Users for lab fetched"));
+});
+
+export { createLab, getAllLabs, getLabById, updateLab, deleteLab, addSensorToLab, getSensorsByLab,addUserToLab,getLabsByUser, getUsersByLab };
+
