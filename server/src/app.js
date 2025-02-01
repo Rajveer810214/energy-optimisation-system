@@ -15,7 +15,9 @@ app.use(cookieParser())
 
 
 import userRouter from './routes/router.js'
+import adminRouter from './routes/admin.router.js'
 // import errorHandler from "./utils/errorHandler.js"
 app.use('/api/users',userRouter)
+app.use('/api/admin',adminRouter)
 // app.use(errorHandler); 
 export {app}
