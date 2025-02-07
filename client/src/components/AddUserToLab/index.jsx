@@ -32,7 +32,7 @@ const AddUserToLab = () => {
       } catch (error) {
         setSnackbar({
           open: true,
-          message: error.response?.data?.message || "Error fetching users",
+          message: error.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred',
           severity: "error",
         });
       }

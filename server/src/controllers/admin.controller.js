@@ -5,13 +5,24 @@ import {Lab} from '../models/lab.model.js';
 import {Sensor} from '../models/sensor.model.js';
 import { User } from '../models/user.model.js';
 const createLab = asyncHandler(async (req, res) => {
-    const lab = new Lab(req.body);
-    await lab.save({ validateBeforeSave: false });
+    const { name, location, description, department } = req.body;
+
+    if (!['Computer Science', 'IT', 'Mechanical'].includes(department)) {
+        throw new ApiError(400, "Invalid department");
+    }
+
+    const lab = new Lab({ name, location, description, department });
+    await lab.save();
+
     return res.status(201).json(new ApiResponse(201, lab, "Lab created successfully"));
 });
 
 const getAllLabs = asyncHandler(async (req, res) => {
-    const labs = await Lab.find().populate('sensors');
+    const { department } = req.query;
+    
+    const filter = department ? { department } : {}; // Filter labs based on department
+    const labs = await Lab.find(filter);
+
     return res.status(200).json(new ApiResponse(200, labs, "All labs fetched"));
 });
 
@@ -115,5 +126,131 @@ const getUsersByLab = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, lab.users, "Users for lab fetched"));
 });
 
-export { createLab, getAllLabs, getLabById, updateLab, deleteLab, addSensorToLab, getSensorsByLab,addUserToLab,getLabsByUser, getUsersByLab };
+const deleteUserFromLab = asyncHandler(async (req, res) => {
+    try {
+        const { labId, userId } = req.params;
+    
+        // Find the lab and remove the user from the `users` array
+        const updatedLab = await Lab.findByIdAndUpdate(
+          labId,
+          { $pull: { users: userId } },
+          { new: true }
+        );
+    
+        if (!updatedLab) {
+          return res.status(404).json({ message: 'Lab not found' });
+        }
+    
+        res.status(200).json(
+          new ApiResponse(200, updatedLab, 'User removed from lab')
+        );
+      } catch (error) {
+        res.status(500).json({ message: 'Error removing user', error });
+      }
+})
+
+const editUserDetailsLab=asyncHandler(async(req,res)=>{
+    try {
+        const { userId } = req.params;
+        const { email } = req.body;
+    
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { email },
+          { new: true }
+        );
+    
+        if (!updatedUser) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+    
+        res.status(200).json(
+            new ApiResponse(200, updatedUser, 'Email updated successfully')
+        );
+      } catch (error) {
+        res.status(500).json({ message: 'Error updating email', error });
+      }
+})
+
+
+
+
+
+// Add a new sensor to a lab
+const addSensor = asyncHandler(async (req, res) => {
+    try {
+        const { labId } = req.params;   
+        const { sensorType, location, macAddress, sensorId, deviceName } = req.body;
+
+        console.log("Received sensor data:", req.body); // Debugging
+
+        // Check if any required field is missing
+        if (!sensorType || !location || !macAddress || !sensorId || !deviceName) {
+            return res.status(400).json({ success: false, message: "All fields are required." });
+        }
+
+        const newSensor = new Sensor({ 
+            sensorType, 
+            location, 
+            macAddress, 
+            sensorId, 
+            deviceName, 
+            lab: labId // Ensure labId is correctly associated
+        });
+
+        await newSensor.save();
+
+        // Add sensor reference to the lab
+        await Lab.findByIdAndUpdate(labId, { $push: { sensors: newSensor._id } });
+
+        res.status(201).json({ success: true, message: "Sensor added successfully", data: newSensor });
+    } catch (error) {
+        console.error("Error adding sensor:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+
+// Update a sensor
+ const updateSensor = asyncHandler(async (req, res) => {
+    try {
+        const { sensorId } = req.params;
+        const { name, type, value } = req.body;
+
+        const updatedSensor = await Sensor.findByIdAndUpdate(
+            sensorId,
+            { name, type, value },
+            { new: true }
+        );
+
+        if (!updatedSensor) {
+            return res.status(404).json({ success: false, message: "Sensor not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Sensor updated successfully", data: updatedSensor });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// Delete a sensor
+const deleteSensor = asyncHandler(async (req, res) => {
+    try {
+        const { sensorId, labId } = req.params;
+
+        const sensor = await Sensor.findByIdAndDelete(sensorId);
+        if (!sensor) {
+            return res.status(404).json({ success: false, message: "Sensor not found" });
+        }
+
+        // Remove sensor reference from the lab
+        await Lab.findByIdAndUpdate(labId, { $pull: { sensors: sensorId } });
+
+        res.status(200).json({ success: true, message: "Sensor deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+export { createLab, getAllLabs, getLabById, updateLab, deleteLab, addSensorToLab, getSensorsByLab,addUserToLab,getLabsByUser, getUsersByLab,deleteUserFromLab,editUserDetailsLab,addSensor,updateSensor,deleteSensor};
 

@@ -37,7 +37,6 @@ const AboutPage = () => {
 
   return (
     <>
-    <Navbar />
     <Container sx={{ minHeight: '100vh', padding: 4 }}>
       {/* Hero Section */}
       <motion.div 

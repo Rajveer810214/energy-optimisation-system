@@ -1,24 +1,39 @@
 import * as React from 'react';
-import { useEffect,useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  AppBar, 
+  Box, 
+  Toolbar, 
+  IconButton, 
+  Typography, 
+  Menu, 
+  Container, 
+  Avatar, 
+  Button, 
+  Tooltip, 
+  MenuItem, 
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  Switch,
+} from '@mui/material';
+import { 
+  Menu as MenuIcon, 
+  Dashboard as DashboardIcon, 
+  Person as ProfileIcon, 
+  Settings as SettingsIcon, 
+  Logout as LogoutIcon, 
+  Brightness4 as ThemeIcon,
+  Home as HomeIcon,
+  // Lab as HomeIcon,
+} from '@mui/icons-material';
+
 import getUserDetail from '../../hooks/GetUserDetails';
 import axios from 'axios';
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ResponsiveAppBar() {
+const Navbar = ({ toggleTheme, isDarkMode }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -37,72 +52,96 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
   useEffect(() => {
-    
     fetchUserDetails();
   }, []);
 
   const fetchUserDetails = async () => {
     const userDetails = await getUserDetail();
-    setUser(userDetails); 
-    console.log('userDetails:', userDetails);
+    setUser(userDetails);
   };
+
   const handleLogout = async () => {
-    await axios
-      .post(`/api/users/logOut`,{},{ withCredentials: true } )
-      .then((result) => {
-        if (result.data.success) {
-          
-        //   toast.success(result.data.message, {
-        //     position: "top-center",
-        //     autoClose: 3000,
-        //     onClose: () => {
-        //       window.location.reload(); // Reload page after toast closes
-        //     }
-        //   });
-        //   // logout()
-        }
-        // setTimeout(()=>{
-        //   onLogoutConfirm()
-        // },2000)
-        
-      })
-      .catch((err) => {
-        // toastwarn("Logout Failed", {
-        //   position: "top-center",
-        //   autoClose: 3000,
-        // });
-        console.log(err)
-      });
+    try {
+      await axios.post(`/api/users/logOut`, {}, { withCredentials: true });
+      navigate('/signin');
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
   };
+
+  const handleMenuItemClick = (path) => {
+    navigate(path);
+    handleCloseUserMenu();
+  };
+
+  const navLinks = [
+    { 
+      icon: <HomeIcon />, 
+      text: 'Home', 
+      path: '/' 
+    },
+    { 
+      // icon: <LabIcon />, 
+      text: 'My Labs', 
+      path: '/labs' 
+    },
+    { 
+      icon: <HomeIcon />, 
+      text: 'About', 
+      path: '/about' 
+    },
+    { 
+      icon: <HomeIcon />, 
+      text: 'Contact us', 
+      path: '/contact' 
+    },
+  ];
 
   return (
-    <AppBar position="static">
+    <AppBar 
+      position="static" 
+      sx={{ 
+        background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
+          {/* Logo Section */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            flexGrow: { xs: 1, md: 0 } 
+          }}>
+            {/* <LabIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              onClick={() => navigate('/dashboard')}
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'Roboto',
+                fontWeight: 700,
+                letterSpacing: '.2rem',
+                color: 'inherit',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                ':hover': { opacity: 0.8 }
+              }}
+            >
+              LAB MANAGER
+            </Typography>
+          </Box>
 
+          {/* Mobile Menu */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
+              aria-label="app menu"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
@@ -126,77 +165,100 @@ function ResponsiveAppBar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+              {navLinks.map((link) => (
+                <MenuItem 
+                  key={link.text} 
+                  onClick={() => handleMenuItemClick(link.path)}
+                >
+                  <ListItemIcon>{link.icon}</ListItemIcon>
+                  <ListItemText>{link.text}</ListItemText>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
+
+          {/* Desktop Navigation Links */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {navLinks.map((link) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                key={link.text}
+                onClick={() => handleMenuItemClick(link.path)}
+                startIcon={link.icon}
+                sx={{ 
+                  color: 'white', 
+                  mx: 1,
+                  ':hover': { 
+                    backgroundColor: 'rgba(255,255,255,0.2)' 
+                  }
+                }}
               >
-                {page}
+                {link.text}
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
+
+          {/* User Profile & Settings */}
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+            {/* Theme Toggle */}
+            <Tooltip title={`Switch to ${isDarkMode ? 'Light' : 'Dark'} Mode`}>
+              <IconButton onClick={toggleTheme} sx={{ mr: 1, color: 'white' }}>
+                <ThemeIcon />
+              </IconButton>
+            </Tooltip>
+
+            {/* User Menu */}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={user?.username || "R"} sx={{ bgcolor: 'primary.main' }}>
+                <Avatar 
+                  alt={user?.username || "R"} 
+                  sx={{ 
+                    bgcolor: 'secondary.main', 
+                    width: 40, 
+                    height: 40 
+                  }}
+                >
                   {user?.username ? user.username.charAt(0).toUpperCase() : "R"}
                 </Avatar>
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
+              PaperProps={{
+                elevation: 0,
+                sx: {
+                  overflow: 'visible',
+                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                  mt: 1.5,
+                  '& .MuiAvatar-root': {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                },
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={() => {
-                  if (setting === 'Logout') {
-                    handleLogout()
-                  }
-                  // handl()
-                }}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={() => handleMenuItemClick('/profile')}>
+                <ListItemIcon><ProfileIcon fontSize="small" /></ListItemIcon>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={() => handleMenuItemClick('/dashboard')}>
+                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
+                Dashboard
+              </MenuItem>
+              <MenuItem onClick={() => handleMenuItemClick('/settings')}>
+                <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+                Settings
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                Logout
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
@@ -204,4 +266,5 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
-export default ResponsiveAppBar;
+
+export default Navbar;

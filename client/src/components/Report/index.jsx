@@ -80,7 +80,6 @@ const LDRPowerMonitoring = () => {
 
   return (
     <>
-    <Navbar />
     <Box sx={{ p: 4, backgroundColor: '#f5f5f5' }}>
       <Typography variant="h4" sx={{ textAlign: "center", mb: 3, color: '#2c3e50', fontWeight: 'bold' }}>
         LDR Power Monitoring Dashboard
