@@ -1,11 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
   Box, Typography, TextField, Button, Card, CardContent, Divider,
   Snackbar, Alert, Avatar, Chip, Grid
 } from '@mui/material';
 import { Lock as LockIcon, Email as EmailIcon, Person as PersonIcon } from '@mui/icons-material';
-import api from '../api/axios';
 import getUserDetail from '../hooks/GetUserDetails';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +40,7 @@ const Profile = () => {
         setSnackbar({ open: true, message: 'Username cannot be empty', severity: 'error' });
         return;
       }
-      const res=await axios.post(`/api/users/update-username`, { username });
+      const res=await axios.post(`https://energy-optimisation-system.onrender.com/api/users/update-username`, { username });
       console.log("res",res);
       setSnackbar({ open: true, message: 'Username updated successfully', severity: 'success' });
     } catch (err) {
@@ -57,7 +56,7 @@ const Profile = () => {
         setSnackbar({ open: true, message: 'Email cannot be empty', severity: 'error' });
         return;
       }
-      await axios.post(`/api/users/update-email`, { email });
+      await axios.post(`https://energy-optimisation-system.onrender.com/api/users/update-email`, { email });
       setSnackbar({ open: true, message: 'Email updated successfully', severity: 'success' });
     } catch (err) {
       setSnackbar({ open: true, message: err.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred', severity: 'error' });
@@ -74,7 +73,7 @@ const Profile = () => {
         setSnackbar({ open: true, message: 'Passwords do not match', severity: 'error' });
         return;
       }
-      await axios.post(`/api/users/update-password`, { oldPassword, newPassword });
+      await axios.post(`https://energy-optimisation-system.onrender.com/api/users/update-password`, { oldPassword, newPassword });
       setSnackbar({ open: true, message: 'Password updated successfully', severity: 'success' });
       setOldPassword('');
       setNewPassword('');

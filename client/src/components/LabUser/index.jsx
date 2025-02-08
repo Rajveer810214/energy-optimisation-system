@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Grid,
-  CircularProgress,
   Alert,
   Button,
   TextField,
@@ -17,7 +16,6 @@ import {
   DialogContent,
   DialogActions,
   Skeleton,
-  SvgIcon,
 } from "@mui/material";
 import { 
   Edit as EditIcon, 
@@ -25,8 +23,7 @@ import {
   Person as PersonIcon,
   Email as EmailIcon,
   AdminPanelSettings as AdminIcon,
-  Group,
-  PersonOff,
+  
 } from '@mui/icons-material';
 import api from "../../api/axios";
 import getUserDetail from "../../hooks/GetUserDetails";
@@ -34,34 +31,6 @@ import { useNavigate } from "react-router-dom";
 import tokenHeader from '../../utils/header-token';
 import EmptyIllustration from "../EmptyIllustration";
 
-const NoUsersIllustration = () => {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "60vh",
-        textAlign: "center",
-      }}
-    >
-      <SvgIcon
-        sx={{ fontSize: "100px", color: "#1976d2", mb: 2 }}
-        viewBox="0 0 24 24"
-      >
-        <Group />
-        <PersonOff />
-      </SvgIcon>
-      <Typography variant="h6" sx={{ color: "#666", mb: 2 }}>
-        No users found in this lab.
-      </Typography>
-      <Typography variant="body1" sx={{ color: "#999" }}>
-        Add users to get started!
-      </Typography>
-    </Box>
-  );
-};
 
 const LabUsers = () => {
   const navigate = useNavigate();

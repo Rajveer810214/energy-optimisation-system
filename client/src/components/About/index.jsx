@@ -1,8 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Power, Activity, AlertTriangle, Check, Server, Battery, Zap, Save } from 'lucide-react';
 import { Container, Grid, Typography, Card, CardContent, Button, Box } from '@mui/material';
-import Navbar from '../Navbar'
 
 const AboutPage = () => {
   const features = [

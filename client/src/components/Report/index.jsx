@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Grid, Box } from "@mui/material";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,  PieChart, Pie, Cell } from 'recharts';
 import sensorsData from "../../assets/lab-monitoring.labmappings.json";
-import Navbar from '../Navbar'
 const LDRPowerMonitoring = () => {
   const [data, setData] = useState([]);
   const [powerHistory, setPowerHistory] = useState([]); // Track power consumption over time

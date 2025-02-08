@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Box, Container, Grid, Typography, TextField, Button, Card, CardContent, CardActions, Divider, IconButton } from '@mui/material';
 import { Phone, Email, LocationOn, Facebook, Twitter, LinkedIn } from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import Navbar from '../Navbar'
 
 const ContactPage = () => {
   const [form, setForm] = useState({

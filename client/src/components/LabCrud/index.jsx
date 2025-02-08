@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -22,7 +22,6 @@ import {
   Avatar,
   Badge,
   Skeleton,
-  LinearProgress
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -155,7 +154,7 @@ const LabList = () => {
       handleClose();
       fetchLabs(user);
     } catch (error) {
-      setSnackbar({ open: true, message: 'Error saving lab', severity: 'error' });
+      setSnackbar({ open: true, message: 'Error saving lab', severity: error });
     }
     finally{
       setTimeout(() => {
@@ -172,7 +171,7 @@ const LabList = () => {
       setSnackbar({ open: true, message: 'Lab deleted successfully', severity: 'success' });
       fetchLabs(user);
     } catch (error) {
-      setSnackbar({ open: true, message: 'Error deleting lab', severity: 'error' });
+      setSnackbar({ open: true, message: 'Error deleting lab', severity: error });
       setLoading(false)
     }
     finally{

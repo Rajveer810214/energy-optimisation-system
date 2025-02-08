@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Box, SvgIcon, Typography } from '@mui/material';
 import { Group, PersonOff } from '@mui/icons-material';
 
