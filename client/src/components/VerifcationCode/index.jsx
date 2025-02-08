@@ -43,7 +43,7 @@ function EmailVerification() {
     setLoading(true); // Set loading state
 
     try {
-      const response = await axios.post('http://localhost:4000/api/users/send-verification-code', {
+      const response = await axios.post('https://energy-optimisation-system.onrender.com/api/users/send-verification-code', {
         email: formData.email || localStorage.getItem('email'),
         subject: formData.subject,
       });

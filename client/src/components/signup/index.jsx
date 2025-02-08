@@ -83,7 +83,7 @@ function SignupPage() {
     }
 
     try {
-      const response = await axios.post('/api/users/register', {
+      const response = await axios.post('https://energy-optimisation-system.onrender.com/api/users/register', {
         username: formData.name,
         email: formData.email,
         // phone: formData.phone,
