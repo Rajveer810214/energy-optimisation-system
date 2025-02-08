@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import axios from 'axios';
 import {
   Box,
@@ -14,7 +14,7 @@ import {
   Link,
   Paper,
   IconButton,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 import { createTheme, ThemeProvider, alpha } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -74,12 +74,25 @@ function LoginPage() {
     setSuccess(false);
 
     try {
-      const response = await axios.post('/api/users/login', {
+      const response = await axios.post('https://energy-optimisation-system.onrender.com/api/users/login', {
         email: formData.email,
         password: formData.password,
       }, { withCredentials: true });
       
       setSuccess(true);
+    
+      
+      // Convert object to string and store in localStorage
+    console.log(response.data.data.refreshToken)
+    const userData = {
+      ...response.data.data.loggedIn, // Store logged-in user data
+      accessToken: response.data.data.user, // Extract access token
+      refreshToken: response.data.data.refreshToken // Extract refresh token
+    };
+    
+    // Save the data in localStorage
+    localStorage.setItem("user", JSON.stringify(userData));
+          
       setTimeout(() => {
         navigate('/');
       }, 1000);
@@ -394,7 +407,7 @@ function LoginPage() {
                             },
                           }}
                         >
-                          Don't have an account? Sign Up
+                          Don&apos;t have an account? Sign Up
                         </Link>
                       </Grid>
                     </Grid>

@@ -16,7 +16,6 @@ import {
   Divider,
   ListItemIcon,
   ListItemText,
-  Switch,
 } from '@mui/material';
 import { 
   Menu as MenuIcon, 
@@ -24,15 +23,19 @@ import {
   Person as ProfileIcon, 
   Settings as SettingsIcon, 
   Logout as LogoutIcon, 
-  Brightness4 as ThemeIcon,
   Home as HomeIcon,
+  
   // Lab as HomeIcon,
 } from '@mui/icons-material';
+import ContactMailIcon from '@mui/icons-material/ContactMail'; // Email contact
+import InfoIcon from '@mui/icons-material/Info'; // Standard About icon
+import ScieLnceIcon from '@mui/icons-material/Science';
+
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import getUserDetail from '../../hooks/GetUserDetails';
-import axios from 'axios';
 
-const Navbar = ({ toggleTheme, isDarkMode }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -64,8 +67,8 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`/api/users/logOut`, {}, { withCredentials: true });
-      navigate('/signin');
+      await localStorage.clear()
+      navigate('/');
     } catch (err) {
       console.error('Logout failed', err);
     }
@@ -83,17 +86,17 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
       path: '/' 
     },
     { 
-      // icon: <LabIcon />, 
+      icon: <ScieLnceIcon />, 
       text: 'My Labs', 
       path: '/labs' 
     },
     { 
-      icon: <HomeIcon />, 
+      icon: <InfoIcon />, 
       text: 'About', 
       path: '/about' 
     },
     { 
-      icon: <HomeIcon />, 
+      icon: <ContactMailIcon />, 
       text: 'Contact us', 
       path: '/contact' 
     },
@@ -120,7 +123,7 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
               variant="h6"
               noWrap
               component="a"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
@@ -133,7 +136,7 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
                 ':hover': { opacity: 0.8 }
               }}
             >
-              LAB MANAGER
+              ENERGY OPTIMIZER
             </Typography>
           </Box>
 
@@ -200,25 +203,24 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
           {/* User Profile & Settings */}
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
             {/* Theme Toggle */}
-            <Tooltip title={`Switch to ${isDarkMode ? 'Light' : 'Dark'} Mode`}>
-              <IconButton onClick={toggleTheme} sx={{ mr: 1, color: 'white' }}>
-                <ThemeIcon />
-              </IconButton>
-            </Tooltip>
+          
 
             {/* User Menu */}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar 
-                  alt={user?.username || "R"} 
-                  sx={{ 
-                    bgcolor: 'secondary.main', 
-                    width: 40, 
-                    height: 40 
-                  }}
-                >
-                  {user?.username ? user.username.charAt(0).toUpperCase() : "R"}
-                </Avatar>
+              
+
+<Avatar
+  alt={user?.username || "User"}
+  sx={{
+    bgcolor: user?.username ? 'secondary.main' : 'transparent',
+    width: 40,
+    height: 40
+  }}
+>
+  {user?.username ? user.username.charAt(0).toUpperCase() : <AccountCircleIcon fontSize="large" />}
+</Avatar>
+
               </IconButton>
             </Tooltip>
             <Menu
@@ -246,19 +248,19 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
                 <ListItemIcon><ProfileIcon fontSize="small" /></ListItemIcon>
                 Profile
               </MenuItem>
-              <MenuItem onClick={() => handleMenuItemClick('/dashboard')}>
-                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
-                Dashboard
-              </MenuItem>
-              <MenuItem onClick={() => handleMenuItemClick('/settings')}>
-                <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
-                Settings
-              </MenuItem>
+              
               <Divider />
-              <MenuItem onClick={handleLogout}>
-                <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-                Logout
-              </MenuItem>
+              {localStorage.getItem('user') ? (
+    <MenuItem onClick={handleLogout}>
+      <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+      Logout
+    </MenuItem>
+  ) : (
+    <MenuItem onClick={() => navigate('/signin')}>
+      <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+      Login
+    </MenuItem>
+  )}
             </Menu>
           </Box>
         </Toolbar>

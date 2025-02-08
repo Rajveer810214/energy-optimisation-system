@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import TokenHeader from '../../utils/header-token'
 
 const AddUserToLab = () => {
   const { labId } = useParams(); // Get labId from URL
@@ -27,7 +28,7 @@ const AddUserToLab = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await api.get("/users"); // Fetch all users
+        const response = await api.get("/users", TokenHeader); // Fetch all users
         setUsers(response.data.data);
       } catch (error) {
         setSnackbar({
@@ -45,7 +46,7 @@ const AddUserToLab = () => {
     if (!selectedUser) return;
 
     try {
-      await api.post(`/labs/${labId}/users/${selectedUser}`); // API Call
+      await api.post(`/labs/${labId}/users/${selectedUser}`, TokenHeader); // API Call
       setSnackbar({ open: true, message: "User added successfully!", severity: "success" });
       setTimeout(() => navigate(-1), 1500); // Navigate back after success
     } catch (error) {

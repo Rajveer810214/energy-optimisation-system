@@ -184,6 +184,7 @@ const refreshAccessToken=asyncHandler(async(req,res)=>{
 
 const getUserDetails=asyncHandler(async(req,res)=>{
     // console.log("req",req.user)
+    console.log()
     console.log("call")
     if (!req.user) {
         return res.status(404).json({ message: "User not found" });

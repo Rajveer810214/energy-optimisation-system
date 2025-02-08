@@ -21,6 +21,7 @@ import {
   Chip,
   Avatar,
   Badge,
+  Skeleton,
   LinearProgress
 } from '@mui/material';
 import {
@@ -35,11 +36,11 @@ import {
   Info as InfoIcon,           // Info Icon
   Report as ReportIcon        // Report Icon
 } from '@mui/icons-material';
-
+import EmptyIllustration from '../EmptyIllustration';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import getUserDetail from '../../hooks/GetUserDetails';
-
+import tokenHeader from '../../utils/header-token';
 const departments = ['Computer Science', 'IT', 'Mechanical'];
 const departmentColors = {
   'Computer Science': '#2196f3',
@@ -56,12 +57,13 @@ const LabList = () => {
   const [formData, setFormData] = useState({ name: '', location: '', description: '', department: '' });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     fetchUserDetails();
   }, []);
 
   const fetchUserDetails = async () => {
+    setLoading(true)
    try {
      const userDetails = await getUserDetail();
      console.log("user")
@@ -71,17 +73,26 @@ const LabList = () => {
        navigate("/signin");
        return;
      }
+     console.log(userDetails)
      setUser(userDetails);
      fetchLabs(userDetails);
    } catch (error) {
     console.warn("error", error);
     navigate("/signin");
    }
+   finally{
+    setTimeout(() => {
+      
+      setLoading(false)
+    }, 2000);
+  }
   };
 
   const fetchLabs = async (loggedInUser) => {
+    setLoading(true)
     try {
-      const response = await api.get(`/labs${selectedDepartment ? `?department=${selectedDepartment}` : ''}`);
+      
+      const response = await api.get(`/labs?department=${selectedDepartment}`, tokenHeader);
       let filteredLabs = response.data.data;
       if (loggedInUser && loggedInUser.role !== 'admin') {
         filteredLabs = filteredLabs.filter(lab => lab.users.includes(loggedInUser._id));
@@ -90,10 +101,16 @@ const LabList = () => {
     } catch (error) {
       setSnackbar({
         open: true,
-       message: error.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred',
-
+        message: error.response?.data?.message || 'An error occurred',
         severity: 'error'
       });
+      
+    }
+    finally{
+      setTimeout(() => {
+        
+        setLoading(false)
+      }, 2000);
     }
   };
 
@@ -104,6 +121,8 @@ const LabList = () => {
   }, [selectedDepartment]);
 
   const handleOpen = (lab = null) => {
+
+    console.log("Opening modal with lab:", lab);
     if (lab) {
       setSelectedLab(lab);
       setFormData({ name: lab.name, location: lab.location, description: lab.description, department: lab.department });
@@ -113,6 +132,7 @@ const LabList = () => {
     }
     setOpen(true);
   };
+  
 
   const handleClose = () => {
     setOpen(false);
@@ -121,12 +141,15 @@ const LabList = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true)
     try {
+      console.log(selectedLab+"hi")
       if (selectedLab) {
-        await api.put(`/labs/${selectedLab._id}`, formData);
+        await fetch.put(`https://energy-optimisation-system.onrender.com/api/admin/labs/${selectedLab._id}`, formData);
         setSnackbar({ open: true, message: 'Lab updated successfully', severity: 'success' });
       } else {
-        await api.post('/labs', formData);
+        console.log(formData)
+        await api.post('/labs', formData, tokenHeader);
         setSnackbar({ open: true, message: 'Lab created successfully', severity: 'success' });
       }
       handleClose();
@@ -134,18 +157,50 @@ const LabList = () => {
     } catch (error) {
       setSnackbar({ open: true, message: 'Error saving lab', severity: 'error' });
     }
+    finally{
+      setTimeout(() => {
+        
+        setLoading(false)
+      }, 2000);
+    }
   };
 
   const handleDelete = async (labId) => {
+    setLoading(true)
     try {
-      await api.delete(`/labs/${labId}`);
+      await api.delete(`/labs/${labId}`, tokenHeader);
       setSnackbar({ open: true, message: 'Lab deleted successfully', severity: 'success' });
       fetchLabs(user);
     } catch (error) {
       setSnackbar({ open: true, message: 'Error deleting lab', severity: 'error' });
+      setLoading(false)
+    }
+    finally{
+      setLoading(false)
     }
   };
-
+  if (loading) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h4" sx={{ mb: 3 }}>
+          <Skeleton variant="text" width={200} />
+        </Typography>
+        <Grid container spacing={3}>
+          {[1, 2, 3].map((item) => (
+            <Grid item xs={12} sm={6} md={4} key={item}>
+              <Card sx={{ p: 2, borderRadius: 3 }}>
+                <CardContent>
+                  <Skeleton variant="text" width={150} height={30} />
+                  <Skeleton variant="rectangular" width={100} height={20} sx={{ mt: 2 }} />
+                  <Skeleton variant="rectangular" width={80} height={20} sx={{ mt: 2 }} />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
   return (
     <Box sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <Box sx={{ 
@@ -197,7 +252,9 @@ const LabList = () => {
           </Button>
         )}
       </Box>
-
+      {labs.length === 0 ? (
+        <EmptyIllustration title={"No Labs found"} subtitle={"Add labs to get started!"} />
+      ) : (
       <Grid container spacing={3}>
         {labs.map((lab) => (
           <Grid item xs={12} sm={6} md={4} key={lab._id}>
@@ -233,7 +290,10 @@ const LabList = () => {
                   </Box>
                 </Box>
 
-                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1, mb: 2 }} onClick={(e) => { 
+                          e.stopPropagation(); 
+                          navigate(`/labs/${lab._id}/sensors`); 
+                        }} >
                   <Chip
                     label={lab.department}
                     sx={{ 
@@ -339,7 +399,7 @@ const LabList = () => {
           </Grid>
         ))}
       </Grid>
-
+      )}
       <Dialog 
         open={open} 
         onClose={handleClose}

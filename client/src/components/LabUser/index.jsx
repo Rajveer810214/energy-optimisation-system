@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -16,19 +16,55 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Skeleton,
+  SvgIcon,
 } from "@mui/material";
 import { 
   Edit as EditIcon, 
   Delete as DeleteIcon, 
   Person as PersonIcon,
   Email as EmailIcon,
-  AdminPanelSettings as AdminIcon 
+  AdminPanelSettings as AdminIcon,
+  Group,
+  PersonOff,
 } from '@mui/icons-material';
 import api from "../../api/axios";
-import Navbar from "../Navbar";
 import getUserDetail from "../../hooks/GetUserDetails";
+import { useNavigate } from "react-router-dom";
+import tokenHeader from '../../utils/header-token';
+import EmptyIllustration from "../EmptyIllustration";
+
+const NoUsersIllustration = () => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "60vh",
+        textAlign: "center",
+      }}
+    >
+      <SvgIcon
+        sx={{ fontSize: "100px", color: "#1976d2", mb: 2 }}
+        viewBox="0 0 24 24"
+      >
+        <Group />
+        <PersonOff />
+      </SvgIcon>
+      <Typography variant="h6" sx={{ color: "#666", mb: 2 }}>
+        No users found in this lab.
+      </Typography>
+      <Typography variant="body1" sx={{ color: "#999" }}>
+        Add users to get started!
+      </Typography>
+    </Box>
+  );
+};
 
 const LabUsers = () => {
+  const navigate = useNavigate();
   const { labId } = useParams();
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
@@ -39,14 +75,21 @@ const LabUsers = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      navigate('/signin'); // Redirect to sign-in if user is not found in localStorage
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const loggedInUser = await getUserDetail();
         setUser(loggedInUser);
-        const response = await api.get(`/labs/${labId}/users`);
+        const response = await api.get(`/labs/${labId}/users`, tokenHeader);
         setUsers(response.data.data);
       } catch (error) {
-        setError("Failed to load users");
+        setError("Failed to load users", error);
       } finally {
         setLoading(false);
       }
@@ -62,11 +105,11 @@ const LabUsers = () => {
 
   const handleSaveEmail = async (userId) => {
     try {
-      const response = await api.patch(`/users/${userId}/email`, { email: newEmail });
+      const response = await api.patch(`/users/${userId}/email`, { email: newEmail }, tokenHeader);
       setUsers(users.map((u) => (u._id === userId ? { ...u, email: response.data.data.email } : u)));
       setEditingUserId(null);
     } catch (error) {
-      const errorMessage = err.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred';
+      const errorMessage = error.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred';
       console.log(errorMessage);
       setError(errorMessage);
     }
@@ -74,40 +117,64 @@ const LabUsers = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      await api.delete(`/labs/${labId}/users/${userId}`);
+      await api.delete(`/labs/${labId}/users/${userId}`, tokenHeader);
       setUsers(users.filter((u) => u._id !== userId));
       setDeleteConfirmation(null);
     } catch (error) {
-      const errorMessage = err.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred';
+      const errorMessage = error.response?.data?.match(/Error: (.*?)<br>/)?.[1] || 'An error occurred';
       console.log(errorMessage);
       setError(errorMessage);
     }
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h4" sx={{ mb: 3 }}>
+          <Skeleton variant="text" width={200} />
+        </Typography>
+        <Grid container spacing={3}>
+          {[1, 2, 3].map((item) => (
+            <Grid item xs={12} sm={6} md={4} key={item}>
+              <Card sx={{ p: 2, borderRadius: 3 }}>
+                <CardContent>
+                  <Skeleton variant="text" width={150} height={30} />
+                  <Skeleton variant="rectangular" width={100} height={20} sx={{ mt: 2 }} />
+                  <Skeleton variant="rectangular" width={80} height={20} sx={{ mt: 2 }} />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <>
-    
-      <Box sx={{ 
-        p: 4, 
-        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-        minHeight: 'calc(100vh - 64px)'
-      }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            mb: 3, 
-            fontWeight: "bold", 
-            color: "#1976d2",
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2
-          }}
-        >
-          <PersonIcon fontSize="large" /> Users in Lab
-        </Typography>
+    <Box sx={{ 
+      p: 4, 
+      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      minHeight: 'calc(100vh - 64px)'
+    }}>
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          mb: 3, 
+          fontWeight: "bold", 
+          color: "#1976d2",
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2
+        }}
+      >
+        <PersonIcon fontSize="large" /> Users in Lab
+      </Typography>
+
+      {users.length === 0 ? (
+        <EmptyIllustration title={"No users found in this lab."} subtitle={"Add users to get started!"} />
+      ) : (
         <Grid container spacing={3}>
           {users.map((userItem) => (
             <Grid item xs={12} sm={6} md={4} key={userItem._id}>
@@ -211,34 +278,34 @@ const LabUsers = () => {
             </Grid>
           ))}
         </Grid>
+      )}
 
-        {/* Delete Confirmation Dialog */}
-        <Dialog
-          open={!!deleteConfirmation}
-          onClose={() => setDeleteConfirmation(null)}
-        >
-          <DialogTitle>Confirm Delete</DialogTitle>
-          <DialogContent>
-            <Typography>Are you sure you want to delete this user?</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button 
-              onClick={() => setDeleteConfirmation(null)} 
-              color="secondary"
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={() => handleDeleteUser(deleteConfirmation)} 
-              color="error" 
-              autoFocus
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    </>
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={!!deleteConfirmation}
+        onClose={() => setDeleteConfirmation(null)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this user?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setDeleteConfirmation(null)} 
+            color="secondary"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={() => handleDeleteUser(deleteConfirmation)} 
+            color="error" 
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

@@ -382,7 +382,7 @@ function SignupPage() {
                     <Grid container justifyContent="center">
                       <Grid item>
                         <Link
-                          href="/login"
+                          href="/signin"
                           variant="body2"
                           sx={{
                             color: 'primary.main',

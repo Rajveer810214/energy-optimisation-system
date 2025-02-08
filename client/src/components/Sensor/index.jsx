@@ -12,7 +12,7 @@ import {
 } from '@mui/icons-material';
 import api from '../../api/axios';
 import getUserDetail from '../../hooks/GetUserDetails';
-
+import tokenHeader from '../../utils/header-token'
 const sensorTypes = ['Temperature', 'Humidity', 'Pressure', 'Motion', 'Light', 'Sound'];
 const typeColors = {
   'Temperature': '#f44336',
@@ -51,7 +51,7 @@ const SensorList = () => {
 
   const fetchSensors = async () => {
     try {
-      const response = await api.get(`/labs/${labId}/sensors`);
+      const response = await api.get(`/labs/${labId}/sensors`, tokenHeader);
       setSensors(response.data.data);
     } catch (error) {
       setSnackbar({
@@ -71,7 +71,7 @@ const SensorList = () => {
             return;
         }
 
-        await api.post(`/labs/${labId}/sensors`, formData);
+        await api.post(`/labs/${labId}/sensors`, formData, tokenHeader);
         setSnackbar({ open: true, message: 'Sensor added successfully', severity: 'success' });
 
         setOpen(false);
@@ -89,7 +89,7 @@ const SensorList = () => {
 
   const handleDeleteSensor = async () => {
     try {
-      await api.delete(`labs/${labId}/sensors/${selectedSensor._id}`);
+      await api.delete(`labs/${labId}/sensors/${selectedSensor._id}`, tokenHeader);
       setSnackbar({ open: true, message: 'Sensor deleted successfully', severity: 'success' });
       setDeleteDialogOpen(false);
       fetchSensors();

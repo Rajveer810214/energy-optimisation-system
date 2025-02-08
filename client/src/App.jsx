@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import LabList from './components/Admin';
+import LabList from './components/LabCrud';
 import SensorList from './components/Sensor';
 import SignIn from './components/signin';
 import Signup from './components/signup';
@@ -16,7 +16,7 @@ import About from './components/About';
 import Contact from './components/contact'
 import Report from './components/Report'
 import LandingPage from './components/LandingPage';
-import { Email } from '@mui/icons-material';
+import Profile from './components/Profile';
 import EmailVerification from './components/VerifcationCode';
 
 const theme = createTheme({
@@ -51,6 +51,7 @@ const App = () => {
           <Route path="/verify-code" element={<VerificationCode />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/users" element={<Users />} />
+          <Route path='/profile' element={<Profile />} />
         </Routes>
       </Router>
     </ThemeProvider>

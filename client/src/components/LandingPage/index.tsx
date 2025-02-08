@@ -243,7 +243,15 @@ const LandingPage = () => {
               Ready to Optimize?
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-              <Button onClick={() => navigate("/signin")}
+              <Button onClick={() =>{
+                 const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                 const token = storedUser?.accessToken;
+                if (token) {
+                  navigate("/labs");
+                } else {
+                  navigate("/signin");
+                }
+              }}
                 variant="contained"
                 size="large"
                 
